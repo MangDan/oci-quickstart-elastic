@@ -1,0 +1,1 @@
+# simple-elk-oci-stack
