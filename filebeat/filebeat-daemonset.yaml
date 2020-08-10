@@ -2,17 +2,17 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: filebeat
-  namespace: filebeat
+  namespace: filebeat 
   labels:
-    app: filebeat
+    k8s-app: filebeat
 spec:
   selector:
     matchLabels:
-      app: filebeat
+      k8s-app: filebeat
   template:
     metadata:
       labels:
-        app: filebeat
+        k8s-app: filebeat
     spec:
       serviceAccountName: filebeat
       terminationGracePeriodSeconds: 30
@@ -20,16 +20,34 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: filebeat
-        image: docker.elastic.co/beats/filebeat:7.8.0
+        image: docker.elastic.co/beats/filebeat:7.6.2
+        imagePullPolicy: Always
+#        command: ['sh', '-c', 'echo xxx && sleep 6000']
         args: [
           "-c", "/etc/filebeat.yml",
           "-e",
         ]
         env:
-        - name: LOGSTASH_URL
-          value: "193.122.99.195:5044"
-        - name: ELASTICSEARCH_URL
-          value: "193.122.99.195:9200"
+        - name: ELASTICSEARCH_HOST
+          value: 193.122.99.195
+        - name: ELASTICSEARCH_PORT
+          value: "9200"
+        - name: ELASTICSEARCH_USERNAME
+          value: elastic
+        - name: ELASTICSEARCH_PASSWORD
+          value: changeme
+        - name: LOGSTASH_HOST
+          value: 193.122.99.195
+        - name: LOGSTASH_PORT
+          value: "5044"
+        - name: KIBANA_HOST
+          value: 193.122.99.195
+        - name: KIBANA_PORT
+          value: "5601"
+        - name: ELASTIC_CLOUD_ID
+          value:
+        - name: ELASTIC_CLOUD_AUTH
+          value:
         - name: NODE_NAME
           valueFrom:
             fieldRef:
@@ -52,7 +70,8 @@ spec:
         - name: data
           mountPath: /usr/share/filebeat/data
         - name: varlibdockercontainers
-          mountPath: /var/lib/docker/containers
+          #mountPath: /var/lib/docker/containers
+          mountPath: /u01/data/docker/containers
           readOnly: true
         - name: varlog
           mountPath: /var/log
@@ -64,7 +83,8 @@ spec:
           name: filebeat-config
       - name: varlibdockercontainers
         hostPath:
-          path: /var/lib/docker/containers
+          #path: /var/lib/docker/containers
+          path: /u01/data/docker/containers
       - name: varlog
         hostPath:
           path: /var/log

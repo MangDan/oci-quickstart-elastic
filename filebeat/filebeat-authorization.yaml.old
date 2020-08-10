@@ -15,8 +15,9 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: filebeat
+  namespace: filebeat
   labels:
-    k8s-app: filebeat
+    app: filebeat
 rules:
 - apiGroups: [""] # "" indicates the core API group
   resources:
@@ -33,5 +34,5 @@ metadata:
   name: filebeat
   namespace: filebeat
   labels:
-    k8s-app: filebeat
+    app: filebeat
 ---
